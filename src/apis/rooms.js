@@ -12,9 +12,14 @@ function init(roomsTable) {
     //return res.send(await roomsTable.getAllJoinableRoom());
   });
 
-  router.get('/getJoinableRoom/:language/:userId', async (req, res) => {
-    const { language, userId } = req.params;
-    let room = await roomsTable.getJoinableRoom(userId, language);
+  router.get('/getJoinableRoom', async (req, res) => {
+    const {
+      learning,
+      native,
+      userId
+    } = req.query;
+    
+    let room = await roomsTable.getJoinableRoom(userId, native, learning);
 
     return res.send({ roomId: room._id });
   });

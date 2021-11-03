@@ -17,6 +17,8 @@ class UsersTable {
       _id: new mongoose.Types.ObjectId()
     });
 
+    await result.save();
+
     console.log("result from create new room", result)
     return result;
   }

@@ -28,5 +28,7 @@ exports.User = {
     type: Date,
     isRequired: true,
     default: Date.now
-  }
+  },
+  native: String,
+  learning: String
 }

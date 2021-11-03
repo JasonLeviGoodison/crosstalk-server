@@ -46,14 +46,21 @@ mongoose.connect(MONGO_URL).then(db => {
   io.on('connection', socket => {
     console.log("New connection")
 
+    socket.on('set userId', (userId) => {
+      console.log("I'm getting informed of this sockets userId", userId);
+      socket.userId = userId;
+      console.log("saved, now updated client");
+      socket.emit('ready userId');
+    })
+
     socket.on('join-room', (roomId, userId) => {
-      console.log("someone joined the room")
-      socket.join(roomId)
       console.log("someone joined room", roomId)
+      socket.join(roomId)
       socket.broadcast.to(roomId).emit('user-connected', userId)
 
       socket.on('disconnect', () => {
         socket.broadcast.to(roomId).emit('user-disconnected', userId)
+        console.log("UserId", socket.userId, "disconnected" );
       });
     })
   })
