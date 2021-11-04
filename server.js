@@ -55,12 +55,16 @@ mongoose.connect(MONGO_URL).then(db => {
 
     socket.on('join-room', (roomId, userId) => {
       console.log("someone joined room", roomId)
+      socket.roomId = roomId;
       socket.join(roomId)
       socket.broadcast.to(roomId).emit('user-connected', userId)
 
       socket.on('disconnect', () => {
+        console.log("Disconnect")
         socket.broadcast.to(roomId).emit('user-disconnected', userId)
         console.log("UserId", socket.userId, "disconnected" );
+        console.log("Going to remove", socket.userId, " from ", socket.roomId)
+        roomsTable.removeUserFromRoom(socket.userId, socket.roomId);
       });
     })
   })

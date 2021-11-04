@@ -53,17 +53,46 @@ class RoomsTable {
 
   async joinRoom(room, userId, language) {
     console.log("UserId going to join room", userId, room._id);
-    if (room.language1 != null) {
+    if (room.userId1 != null) {
       room.language2 = language;
       room.userId2 = userId;
     } else {
       room.language1 = language;
       room.userId1 = userId;
     }
-    room.numberInRoom += 1;
+    room.numberInRoom = 1 + room.numberInRoom;
     await room.save();
     console.log("Room looks like after joining", room)
     return room;
+  }
+
+  async removeUserFromRoom(userId, roomId) {
+    var room = await this.dbRoom.findById(roomId);
+    console.log("going to check if" , userId, "is in ", roomId)
+    console.log(room)
+    console.log("is", room.userId1, " the same as ", userId)
+    console.log("is", room.userId2, " the same as ", userId)
+    if (room.userId1 === userId) {
+      room.userId1 = null;
+    }
+    else if (room.userId2 === userId) {
+      room.userId2 = null;
+    }
+    else {
+      console.error("Somehow I am trying to remove a user from a room they arent in");
+      throw "Error";
+    }
+    console.log("Dealing with number in room", room.numberInRoom)
+    if (room.numberInRoom === 1) {
+      room.delete();
+      return;
+    }
+    else {
+      room.numberInRoom = 1;
+    }
+
+    room.save();
+    return;
   }
 }
 
