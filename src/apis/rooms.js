@@ -18,7 +18,7 @@ function init(roomsTable) {
       native,
       userId
     } = req.query;
-    
+
     let room = await roomsTable.getJoinableRoom(userId, native, learning);
 
     return res.send({ roomId: room._id });

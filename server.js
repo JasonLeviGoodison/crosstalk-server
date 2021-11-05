@@ -66,6 +66,11 @@ mongoose.connect(MONGO_URL).then(db => {
         console.log("Going to remove", socket.userId, " from ", socket.roomId)
         roomsTable.removeUserFromRoom(socket.userId, socket.roomId);
       });
+
+      socket.on('mic set', value => {
+        console.log("got a mic request", value)
+        socket.broadcast.to(roomId).emit('mic set', value);
+      })
     })
   })
 

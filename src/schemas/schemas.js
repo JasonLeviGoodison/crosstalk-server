@@ -12,7 +12,12 @@ exports.Room = {
   language1: String,
   language2: String,
   userId1: String,
-  userId2: String
+  userId2: String,
+  deleted: {
+    required: true,
+    default: false,
+    type: Boolean
+  }
 }
 
 exports.User = {
