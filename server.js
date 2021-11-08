@@ -3,6 +3,7 @@ const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
+require('dotenv').config()
 const roomsWithRouterInit = require('./src/apis/rooms');
 const usersWithRouterInit = require('./src/apis/users');
 const cors = require('cors');
@@ -13,9 +14,8 @@ var schemas = require('./src/schemas/schemas')
 var RoomsTable = require("./src/dbOperations/rooms");
 var UsersTable = require("./src/dbOperations/users");
 
-const MONGODB_DB = "crosstalk"
-var MONGO_URL = "mongodb://127.0.0.1:27017"
-MONGO_URL = `${MONGO_URL}/${MONGODB_DB}?retryWrites=true&w=majority`
+var MONGO_URL = process.env.MONGO_URL
+MONGO_URL = `${MONGO_URL}`
 
 mongoose.connect(MONGO_URL).then(db => {
 
@@ -36,7 +36,7 @@ mongoose.connect(MONGO_URL).then(db => {
   app.use(express.static('public'))
 
   app.get('/', (req, res) => {
-    res.redirect(`/${uuidV4()}`)
+    res.send("I'm alive");
   });
 
   app.get('/:room', (req, res) => {
@@ -74,7 +74,8 @@ mongoose.connect(MONGO_URL).then(db => {
     })
   })
 
-  server.listen(3000);
+  var port = process.env.PORT
+  server.listen(port);
 
 
 });
