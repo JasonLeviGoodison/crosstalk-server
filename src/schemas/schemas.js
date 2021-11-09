@@ -2,22 +2,19 @@ var mongoose = require('mongoose')
 
 exports.Room = {
   _id: mongoose.Schema.Types.ObjectId,
-  creatorId: String,
-  numberInRoom: Number,
   created: {
     type: Date,
     default: Date.now,
     required: true
   },
-  language1: String,
-  language2: String,
-  userId1: String,
-  userId2: String,
   deleted: {
     required: true,
     default: false,
     type: Boolean
-  }
+  },
+  spanishSpeakers: Number,
+  englishSpeakers: Number,
+  zoomLink: String
 }
 
 exports.User = {

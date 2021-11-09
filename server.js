@@ -27,6 +27,8 @@ mongoose.connect(MONGO_URL).then(db => {
   var roomsTable = new RoomsTable(dbRoom);
   var usersTable = new UsersTable(dbUser);
 
+  roomsTable.createRooms();
+
   app.use(cors())
 
   app.use('/rooms', roomsWithRouterInit(roomsTable))

@@ -35,13 +35,20 @@ class RoomsTable {
     return roomToJoin;
   }
 
-  async createNewRoom(userId, native, language) {
+  async createRooms() {
+    let roomsFromDb = await this.dbRoom.find({});
+    console.log("something here", roomsFromDb)
+    if (roomsFromDb.length < 5) {
+      console.log("herherher")
+      for (var i = 0; i < 5; i++) {
+        roomsFromDb.push(await this.createNewRoom());
+      }
+    }
+    return roomsFromDb;
+  }
+
+  async createNewRoom() {
     let result = await this.dbRoom({
-      language1: native,
-      language2: language,
-      numberInRoom: 1,
-      creatorId: userId,
-      userId1: userId,
       deleted: false,
       _id: new mongoose.Types.ObjectId()
     })

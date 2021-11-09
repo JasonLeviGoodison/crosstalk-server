@@ -24,6 +24,12 @@ function init(roomsTable) {
     return res.send({ roomId: room._id });
   });
 
+  router.get('/getAllRooms', async (req, res) => {
+    let room = await roomsTable.getJoinableRoom(userId, native, learning);
+
+    return res.send({ roomId: room._id });
+  });
+
   return router;
 }
 
