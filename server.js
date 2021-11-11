@@ -46,22 +46,30 @@ mongoose.connect(MONGO_URL).then(db => {
   io.on('connection', socket => {
     console.log("New connection")
 
-    socket.on('set userId', (userId) => {
-      console.log("I'm getting informed of this sockets userId", userId);
+    socket.on('set user data', (userId, peerId, native, learning) => {
+      console.log("I'm getting informed of this sockets userId", userId, peerId, native, learning);
       socket.userId = userId;
+      socket.native = native;
+      socket.learning = learning;
+      socket.peerId = peerId;
       console.log("saved, now updated client");
       socket.emit('ready userId');
     })
 
-    socket.on('join-room', (roomId, userId) => {
+    // A givenRoomId is either the Id (if the room exists) or the proposed id
+    // if the room doesnt exist
+    socket.on('join-room', async (givenRoomId) => {
+      console.log("SOmeone waits to join or create this room with id", givenRoomId)
+      var roomId = await roomsTable.createOrJoinRoom(givenRoomId, socket.userId, socket.native, socket.learning); 
       console.log("someone joined room", roomId)
       socket.roomId = roomId;
-      socket.join(roomId)
-      socket.broadcast.to(roomId).emit('user-connected', userId)
+      socket.join(roomId);
+      console.log(socket.userId, " joined the room", socket.roomId, " going to message everyone that my peer id is joining", socket.peerId)
+      socket.broadcast.to(roomId).emit('user-connected', socket.peerId)
 
       socket.on('disconnect', () => {
         console.log("Disconnect")
-        socket.broadcast.to(roomId).emit('user-disconnected', userId)
+        socket.broadcast.to(roomId).emit('user-disconnected', socket.userId)
         console.log("UserId", socket.userId, "disconnected" );
         console.log("Going to remove", socket.userId, " from ", socket.roomId)
         roomsTable.removeUserFromRoom(socket.userId, socket.roomId);

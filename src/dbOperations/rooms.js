@@ -13,7 +13,7 @@ class RoomsTable {
   }
 
   async getJoinableRoom(userId, native, language) {
-
+    var roomToJoin = null;
     let roomsFromDb = await this.dbRoom.find({"language1": language, "language2" : native, "userId2": null, "numberInRoom": {"$eq": 1 }, "deleted": false});
     console.log("RoomsFromDb with language and 1 person in them", language,  roomsFromDb)
     console.log("here0", roomsFromDb)
@@ -23,27 +23,43 @@ class RoomsTable {
     console.log("here1", roomsFromDb)
 
     if (roomsFromDb.length == 0) {
-      roomsFromDb = [await this.createNewRoom(userId, native, language)];
+      //roomsFromDb = [await this.createNewRoom(userId, native, language)];
+      return null;
     } else {
-      roomsFromDb [await this.joinRoom(roomsFromDb[0], userId, native)];
+      //roomsFromDb [await this.joinRoom(roomsFromDb[0], userId, native)];
     }
 
     console.log("here2", roomsFromDb)
 
-    var roomToJoin = roomsFromDb[0];
+    roomToJoin = roomsFromDb[0];
 
     return roomToJoin;
   }
 
-  async createNewRoom(userId, native, language) {
+  async createOrJoinRoom(roomId, userId, native, learning) {
+    var room = await this.dbRoom.findById(roomId);
+    if (room === null) {
+      console.log("That room doesnt exist, creating a new one")
+      room = await this.createNewRoom(roomId, userId, native, learning)
+      console.log("room created, roomid", room._id)
+      return room._id.toString()
+    }
+    console.log("That room does exist, joining it");
+    if (room.numberInRoom > 1) throw "Can't join room, someone took your spot. Please go back to homepage"
+    room = await this.joinRoom(room, userId, native);
+    console.log("room joined, roomid", room._id)
+    return room._id.toString();
+  }
+
+  async createNewRoom(roomId, userId, native, language) {
     let result = await this.dbRoom({
       language1: native,
       language2: language,
       numberInRoom: 1,
       creatorId: userId,
       userId1: userId,
-      deleted: false,
-      _id: new mongoose.Types.ObjectId()
+      deleted: false, 
+      _id: roomId
     })
 
     await result.save()
